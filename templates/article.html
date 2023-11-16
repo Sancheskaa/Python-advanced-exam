@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Article</title>
+{% endblock %}
+
+{% block body %}
+<h1 class="last_news">Article</h1>
+<p class="line__"></p>
+
+<div class="container__article">
+    <h1 class="title__article">{{ article.title }}</h1>
+
+    <p class="gray-text2">by {{ article.author }}</p>
+
+    <div class="article-box__">
+        <img src="{{ article.photo }}" alt="">
+        <p>{{ article.content }}</p>
+    </div>
+
+    <p class="gray-text2">Tags: {{ article.tags }}</p>
+    <p><img src="/static/images/calendar3.svg" alt="">     {{ article.date_published.strftime('%Y-%m-%d') }}</p>
+
+    {% if comments %}
+        <h2>Comments:</h2>
+    {% endif %}
+    {% for comment in comments %}
+        <p class="comments__">{{ comment.author.username }} : {{ comment.text }}</p>
+    {% endfor %}
+
+    {% if current_user.is_authenticated %}
+        <form method="POST" action="{{ url_for('comment', article_id=article.id) }}">
+            <div class="form-group">
+                <label for="exampleFormControlTextarea1">Enter a comment</label>
+                <textarea name="comment_text" class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="your comment..."></textarea>
+                <button type="submit" class="btn btn-secondary btnbtn">Add a comment</button>
+              </div>
+        </form>
+    {% endif %}
+    
+</div>
+
+{% endblock %}
+

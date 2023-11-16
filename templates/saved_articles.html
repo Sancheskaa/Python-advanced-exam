@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Saved Articles</title>
+{% endblock %}
+
+{% block body %}
+
+<h1 class="last_news">Saved Articles</h1>
+<p class="line__"></p>
+
+<div class="container__">
+
+    {% for saved_article in saved_articles %}
+        <div class="news-card">
+
+            
+            <img class="img__img" src="/static/images/daily_news.png" alt="">
+            
+
+            <h4 class="name_title">{{ saved_article.article.title }}</h4>
+            <p class="gray__text">{{ saved_article.article.author }}</p>
+            <p class="gray__text">{{ saved_article.article.tags }}</p>
+            
+            <p class="gray__text"><img src="/static/images/calendar3.svg" alt="">     {{ saved_article.article.date_published.strftime('%Y-%m-%d') }}</p>
+
+            <div class="bot__">
+                <a class="learn__more" href="{{ url_for('article', article_id=saved_article.article.id) }}">Learn more</a>
+            </div>
+
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+
+
+
+
+
+<!-- <!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h1>Збережені статті</h1>
+<ul>
+        {% for saved_article in saved_articles %}
+            <li>
+                <strong>{{ saved_article.article.title }}</strong>
+                <p>Автор: {{ saved_article.article.author }}</p>
+
+                {% if saved_article.article.photo %}
+                    <img src="{{ saved_article.article.photo }}" alt="">
+                {% endif %}
+
+                <p>{{ saved_article.article.content }}</p>
+                <p>Теги: {{ saved_article.article.tags }}</p>
+
+                <p>Дата публікації: {{ saved_article.article.date_published.strftime('%Y-%m-%d') }}</p>
+                <a href="{{ url_for('article', article_id=saved_article.article.id) }}">Читати більше</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html> -->

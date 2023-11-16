@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>PortalNewsKalush</title>
+{% endblock %}
+
+{% block search %}
+<form method="POST" action="{{ url_for('index') }}" class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
+    <input type="text" name="keyword" class="form-control form-control-dark text-bg-dark" placeholder="Search..." aria-label="Search">
+</form>
+{% endblock %}
+
+{% block body %}
+<h1 class="last_news">Last News</h1>
+<p class="line__"></p>
+<div class="filter-container__">
+    <button class="filter-button__">Filter</button>
+    <div class="filter-form__">
+        <div class="form__group__">
+            <label for="author" class="form__label__">Author</label>
+            <input type="text" id="author" class="form__input__">
+        </div>
+        <div class="form__group__">
+            <label for="tags" class="form__label__">Tags</label>
+            <input type="text" id="tags" class="form__input__">
+        </div>
+        <div class="form__group__">
+            <label for="date" class="form__label__">Date</label>
+            <input type="text" id="date" class="form__input__">
+        </div>
+        <button class="btn btn-secondary btnbtn" id="apply-filter">Apply filter</button>
+    </div>
+</div>
+<div class="container__">
+
+    {% for article in articles %}
+        <div class="article news-card">
+
+            
+            <img class="img__img" src="/static/images/daily_news.png" alt="">
+            
+
+            <h4 class="name_title">{{ article.title }}</h4>
+            <p class="article-author gray__text">{{ article.author }}</p>
+            <p class="article-tags gray__text">{{ article.tags }}</p>
+            
+            <p class="article-date gray__text"><img src="/static/images/calendar3.svg" alt="">     {{ article.date_published.strftime('%Y-%m-%d') }}</p>
+
+            <div class="bot__">
+                <a class="learn__more" href="{{ url_for('article', article_id=article.id) }}">Learn more</a>
+                {% if current_user.is_authenticated %}
+                    <button class="save-article-btn" data-article-id="{{ article.id }}">Зберегти пост</button>
+                    <div id="save-message-{{ article.id }}" style="display: none">
+                        Пост було збережено!
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+    {% endfor %}
+</div>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterButton = document.querySelector('.filter-button__');
+        const filterForm = document.querySelector('.filter-form__');
+
+        filterButton.addEventListener('click', function () {
+            if (filterForm.style.transform === 'translateX(-100%)') {
+                filterForm.style.transform = 'translateX(0%)';
+                
+            } else {
+                filterForm.style.transform = 'translateX(-100%)';
+                
+            }
+        });
+    });
+
+    document.querySelector('#apply-filter').addEventListener('click', function() {
+
+        var author = document.querySelector('#author').value.toLowerCase();
+        var tags = document.querySelector('#tags').value.toLowerCase();
+        var date = document.querySelector('#date').value.toLowerCase();
+
+        var articles = document.querySelectorAll('.article');
+
+        articles.forEach(function(article) {
+            var articleAuthor = article.querySelector('.article-author').textContent.toLowerCase();
+            var articleTags = article.querySelector('.article-tags').textContent.toLowerCase();
+            var articleDate = article.querySelector('.article-date').textContent.toLowerCase();
+
+            var showArticle = true;
+
+            if (author !== "" && !articleAuthor.includes(author)) {
+                showArticle = false;
+            }
+
+            if (tags !== "" && !articleTags.includes(tags)) {
+                showArticle = false;
+            }
+
+            if (date !== "" && !articleDate.includes(date)) {
+                showArticle = false;
+            }
+
+            if (showArticle) {
+                article.style.display = 'block';
+            } else {
+                article.style.display = 'none';
+            }
+        });
+    });
+
+
+
+
+
+
+    $(document).ready(function() {
+        $('.save-article-btn').each(function() {
+            var articleId = $(this).data('article-id');
+            var button = $(this);
+            var saveMessage = $('#save-message-' + articleId);
+
+            $.ajax({
+                type: 'GET',
+                url: '/check_article_saved/' + articleId,
+                success: function(data) {
+                    if (data.saved) {
+                        button.hide();
+                        saveMessage.show();
+                    } else {
+                        button.show();
+                    }
+                    
+                } 
+            });
+
+
+
+            button.click(function() {
+                $.ajax({
+                    type: 'POST',
+                    url: '/save_article_ajax/' + articleId,
+                    success: function(data) {
+
+                        button.hide();
+                        saveMessage.show();
+
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+{% endblock %}
+
